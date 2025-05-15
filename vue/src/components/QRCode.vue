@@ -47,7 +47,7 @@
       <input
         v-model="aiInput"
         @keyup.enter="callAI"
-        placeholder="AI生成，请输入关键语句"
+        placeholder="AI生成，请输入关键语句，按回车生成周报"
         class="ai-input"
       />
       <div class="loading-message" v-if="isLoading">正在生成中...</div>
@@ -124,7 +124,7 @@ const getClassSchedules = (lqtoken) => {
 
   axios
     .get(
-      `http://127.0.0.1:3001/api/class-schedules?start_at=${formatDate(
+      `http://115.190.37.111:3001/api/class-schedules?start_at=${formatDate(
         monday
       )}&end_at=${formatDate(sunday)}&lqtoken=${lqtoken}`
     )
@@ -148,7 +148,7 @@ const getCourseList = (lqtoken) => {
   }
 
   axios
-    .get(`http://127.0.0.1:3001/api/course-list?lqtoken=${lqtoken}`)
+    .get(`http://115.190.37.111:3001/api/course-list?lqtoken=${lqtoken}`)
     .then((response) => {
       courseList.value = response.data.data.data;
     })
@@ -168,7 +168,7 @@ const getUserInfo = (lqtoken) => {
   }
 
   axios
-    .get(`http://127.0.0.1:3001/api/user/basic?lqtoken=${lqtoken}`)
+    .get(`http://115.190.37.111:3001/api/user/basic?lqtoken=${lqtoken}`)
     .then((response) => {
       userName.value = response.data.data.name;
       getClassSchedules(lqtoken);
@@ -181,7 +181,7 @@ const getUserInfo = (lqtoken) => {
 
 const checkLoginStatus = () => {
   axios
-    .get(`http://127.0.0.1:3001/api/scan-mp-login?scene_str=${scene_str.value}`)
+    .get(`http://115.190.37.111:3001/api/scan-mp-login?scene_str=${scene_str.value}`)
     .then((loginResponse) => {
       if (loginResponse.data.lqtoken) {
         const expirationDate = new Date();
@@ -201,7 +201,7 @@ const checkLoginStatus = () => {
 
 const generateQRCode = () => {
   axios
-    .post("http://127.0.0.1:3001/api/create-qrcode")
+    .post("http://115.190.37.111:3001/api/create-qrcode")
     .then((response) => {
       const ticket = response.data.data.ticket;
       scene_str.value = response.data.data.scene_str;
@@ -240,7 +240,7 @@ onMounted(() => {
 const callAI = () => {
   isLoading.value = true;
   axios
-    .post("http://127.0.0.1:3001/api/ai", { message: aiInput.value })
+    .post("http://115.190.37.111:3001/api/ai", { message: aiInput.value })
     .then((response) => {
       try {
         weeklyReport.value = JSON.parse(response.data.reply);
@@ -292,9 +292,8 @@ const submitReport = () => {
     solution: weeklyReport.value.solutions.join('\n').split('\n').join(','),
     next_week_plan: weeklyReport.value.next_week_plan.join('\n').split('\n').join(',')
   };
-  console.log(reportData);
   axios
-    .post("http://127.0.0.1:3001/api/evaluation", reportData, {
+    .post("http://115.190.37.111:3001/api/evaluation", reportData, {
       headers: {
         'Content-Type': 'application/json',
         'lqtoken': lqtoken

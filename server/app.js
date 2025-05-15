@@ -19,8 +19,8 @@ app.use(cors());
 app.use(express.json());
 
 const openai = new OpenAI({
-  baseURL: process.env.DEEPSEEK_BASE_URL,
-  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: "https://api.deepseek.com/v1",
+  apiKey: "sk-f915a54104834ced9d47a554c91377e0",
 });
 app.post("/api/create-qrcode", express.json(), async (req, res) => {
   try {
@@ -164,7 +164,8 @@ app.get('/api/course-list', async (req, res) => {
 
 app.post('/api/evaluation', async (req, res) => {
   try {
-    const lqtoken = req.query.lqtoken || req.headers['lqtoken'] || req.cookies?.lqtoken;
+    const lqtoken = req.body.lqtoken || req.headers['lqtoken'] || req.cookies?.lqtoken;
+    
     if (!lqtoken) {
       return res.status(401).json({ error: '缺少lqtoken认证信息' });
     }
@@ -174,7 +175,8 @@ app.post('/api/evaluation', async (req, res) => {
       req.body,
       {
         headers: {
-          Cookie: `lqtoken=${lqtoken}`
+          Cookie: `lqtoken=${lqtoken}`,
+          "saas-slug": "lyzyjsxy-lqb:student"
         }
       }
     );
